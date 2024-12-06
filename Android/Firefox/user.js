@@ -490,3 +490,7 @@ user_pref("layout.word_select.eat_space_to_next_word", false);
 /****************************************************************************
  * END: BETTERFOX                                                           *
  ****************************************************************************/
+
+
+
+user_pref("urlclassifier.trackingSkipURLs", "*.reddit.com, *.twitter.com, *.twimg.com, *.tiktok.com, *.zadn.vn");

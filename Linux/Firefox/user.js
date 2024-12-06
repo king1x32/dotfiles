@@ -612,5 +612,10 @@ user_pref("browser.ssb.enabled", true);
 // user_pref("userChrome.tab.bottom_rounded_corner.chrome_legacy", false);
 // user_pref("userChrome.tab.bottom_rounded_corner.edge", true);
 
+
+
+user_pref("urlclassifier.trackingSkipURLs", "*.reddit.com, *.twitter.com, *.twimg.com, *.tiktok.com, *.zadn.vn");
+
+
 // Sua loi xuong dong:
 // %s/user_pref(\n  \(.*\),\n  \(.*\),\n)/user_pref(\1, \2)/gc

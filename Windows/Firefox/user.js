@@ -457,14 +457,8 @@ user_pref("extensions.getAddons.showPane", false);
 user_pref("extensions.htmlaboutaddons.recommendations.enabled", false);
 user_pref("browser.discovery.enabled", false);
 user_pref("browser.shell.checkDefaultBrowser", false);
-user_pref(
-  "browser.newtabpage.activity-stream.asrouter.userprefs.cfr.addons",
-  false,
-);
-user_pref(
-  "browser.newtabpage.activity-stream.asrouter.userprefs.cfr.features",
-  false,
-);
+user_pref("browser.newtabpage.activity-stream.asrouter.userprefs.cfr.addons", false);
+user_pref("browser.newtabpage.activity-stream.asrouter.userprefs.cfr.features", false);
 user_pref("browser.preferences.moreFromMozilla", false);
 user_pref("browser.tabs.tabmanager.enabled", false);
 user_pref("browser.aboutConfig.showWarning", false);
@@ -522,3 +516,10 @@ user_pref("layout.word_select.eat_space_to_next_word", false);
 /****************************************************************************
  * END: BETTERFOX                                                           *
  ****************************************************************************/
+
+
+
+user_pref("urlclassifier.trackingSkipURLs", "*.reddit.com, *.twitter.com, *.twimg.com, *.tiktok.com, *.zadn.vn");
+
+// Sua loi xuong dong
+// %s/user_pref(\n  \(.*\),\n  \(.*\),\n)/user_pref(\1, \2)/gc
