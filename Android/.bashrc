@@ -14,26 +14,31 @@ old_PS1='[\u@\h \W]\$ '
 PS1='\[\e[0;1;91m\][\[\e[0;1;94m\]\u\[\e[0m\]@\[\e[0;1;94m\]\H\[\e[m\] \[\e[0;3m\]\W\[\e[0;1;91m\]]\[\e[0m\]\$\[\e[m\] '
 
 # custom aliases
-alias l='ls -ah --color=auto'
-alias ll='ls -ahl --color=auto'
-alias cdv="cd ~/.config/nvim/lua"
+# alias l='ls -ah --color=auto'
+# alias ll='ls -ahl --color=auto'
+alias l='eza -Ga --icons --git'
+alias ll='eza -GaTL 2 --icons --git'
+alias lo='eza -GlaoTL 2 --icons --git'
+
 # this is to prevent accidental deletion of files with rm, use \rm to actually remove, TODO: start using trash-cli
-alias rm='rm -rvI'
+alias rm='rm -rf'
 alias yay='yay -a'
 alias trm='trash-put'
-
 alias g='git'
-alias lg='lazygit'
-alias gg='lazygit'
+alias lg='gg'
+# alias gg='lazygit'
+alias rsv='nvim /data/data/com.termux/files/usr/etc/resolv.conf'
 
 # editing configs
+alias cdv="cd ~/.config/nvim/lua"
 alias cfb="nvim ~/.bashrc && source ~/.bashrc"
 alias cfs="nvim ~/.config/starship.toml"
 alias cfv="nvim ~/.config/nvim/lua"
 alias cfvv="nvim ~/.config/nvim/lua"
-alias cfvn="nvim ~/.config/nvim/lua"
-alias cfk="nvim ~/.config/nvim/lua/astronvim/mappings.lua"
-alias cfo="nvim ~/.config/nvim/lua/astronvim/options.lua"
+alias cfp="nvim ~/.config/nvim/lua/polish.lua"
+alias cfc="nvim ~/.config/nvim/lua/plugins/astrocore.lua"
+alias cfu="nvim ~/.config/nvim/lua/plugins/user.lua"
+alias cfl="nvim ~/.config/nvim/lua/plugins/astrolsp.lua"
 
 # code editor aliases
 alias v="nvim"
@@ -54,51 +59,78 @@ export LESS_TERMCAP_so=$'\e[01;33m'
 export LESS_TERMCAP_ue=$'\e[0m'
 export LESS_TERMCAP_us=$'\e[1;4;32m'
 
+function gg {
+	export LAZYGIT_NEW_DIR_FILE=~/.lazygit/newdir
+
+	lazygit "$@"
+
+	if [ -f $LAZYGIT_NEW_DIR_FILE ]; then
+		cd "$(cat $LAZYGIT_NEW_DIR_FILE)"
+		rm -f $LAZYGIT_NEW_DIR_FILE >/dev/null
+	fi
+}
+
 function chst {
-    [ -z $1 ] && echo "no args provided!" || (curl -s cheat.sh/$1 | bat --style=plain)
+	[ -z $1 ] && echo "no args provided!" || (curl -s cheat.sh/$1 | bat --style=plain)
 }
 
 mkcd() {
-    if [ "$#" -lt 1 ]; then
-        echo "no arguments provided!"
-        return
-    elif [ "$#" -gt 1 ]; then
-        echo "too many arguments! ignoring extra.."
-    fi
-    test -d "$1" || mkdir "$1" && cd "$1"
+	if [ "$#" -lt 1 ]; then
+		echo "no arguments provided!"
+		return
+	elif [ "$#" -gt 1 ]; then
+		echo "too many arguments! ignoring extra.."
+	fi
+	test -d "$1" || mkdir "$1" && cd "$1"
 }
 
 function gc() {
-    git clone "$1"
+	a="$1"
+	gitssh=${a::15}
+	if [[ $gitssh != 'git@github.com:' ]]; then
+		a="git@github.com:${a}"
+	fi
+	if [[ !"$2" ]]; then
+		git clone $a
+		repo=$(echo "$a" | cut -d/ -f2)
+		test_repo=${repo: -4}
+		if [[ $test_repo == '.git' ]]; then
+			repo=${repo::-4}
+		fi
+		cd $repo
+	else
+		git clone "$a" "$2"
+		cd "$2"
+	fi
 }
 
 function gr() {
-    git remote add "$1" "$2"
-    git fetch --all
-    git merge "$1"/main
+	git remote add "$1" "$2"
+	git fetch --all
+	git merge "$1"/main
+}
+
+gm() {
+	git add -A
+	git commit -m "update"
+	git push
 }
 
 ga() {
-    git add -A
-    git commit -m "update"
-    git push
+	git add -A
+	git commit --amend --no-edit
+	git push -f
 }
 
 grs() {
-    git add -A
-    git commit --amend --no-edit
-    git push -f
-}
-
-grs() {
-    git reset --hard HEAD~$1
-    git push -f
+	git reset --hard HEAD~$1
+	git push -f
 }
 
 #nvm
 # export PATH="/data/data/com.termux/files/usr:$PATH"
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
 # devour aliases
@@ -122,10 +154,10 @@ NNN_PLUG_CMD='l:-!git log;x:!chmod +x "$nnn"*;n:!&nvim "$nnn"*'
 NNN_PLUG="$NNN_PLUG_CMD;$NNN_PLUG_DEFAULT"
 export NNN_PLUG
 #alias nnn="nnn"
-alias n="nnn -H -c -P r"
+alias n="nnn -H -c -P -r -x"
 alias nn="nnn -H -c"
-alias np="nnn -H -c -P x,r"
-export NNN_BMS='h:~;d:~/downloads;v:~/.config/nvim/lua;b:/data/data/com.termux/files/usr/bin;1:~/storage/shared/Download/1DMP;n:~/storage/shared/Download/Nekogram;z:~/storage/shared/Download/Zalo;s:~/.scripts'
+alias np="nnn -H -c -P -r"
+export NNN_BMS='h:~;d:~/downloads;v:~/.config/nvim/lua;b:/data/data/com.termux/files/usr/bin;1:~/storage/shared/Download/1DMP;n:~/storage/shared/Download/Nekogram;z:~/storage/shared/Download/Zalo;g:~/github;w:~/wrangler/kingsmanvn;f:~/fly'
 export NNN_USE_EDITOR=1
 export NNN_ARCHIVE="\\.(7z|a|ace|alz|arc|arj|bz|bz2|cab|cpio|deb|gz|jar|lha|lz|lzh|lzma|lzo|rar|rpm|rz|t7z|tar|tbz|tbz2|tgz|tlz|txz|tZ|tzo|war|xpi|xz|Z|zip)$"
 #export NNN_INCLUDE_HIDDEN=1
@@ -148,26 +180,28 @@ alias c='file=$(rg --files --hidden | fzf | sed "s~/[^/]*$~/~");[[ "$file" == ""
 # alias cf='cd $(fd . -H -t d ~ | fzf --preview="ls {}" --bind="ctrl-space:toggle-preview" --preview-window=,30:hidden); [[ $(ls | wc -l) -le 60 && "$(pwd)" != $HOME ]] && (pwd; ls)'
 alias cf='change_folder'
 alias f='fzf'
-alias vf='rg --files --hidden | fzf --preview="bat {}" --bind="ctrl-space:toggle-preview" --preview-window=:hidden'
-alias rf='$(rg --files --hidden | fzf)'
+alias rf='rg --files --hidden | fzf --preview="bat {}" --bind="ctrl-space:toggle-preview" --preview-window=:hidden'
 
 change_folder() {
-    # if no argument is provided, search from ~ else use argument
-    [[ -z $1 ]] && DIR=~ || DIR=$1
-    # choose file using rg and fzf
-    CHOSEN=$(fd --strip-cwd-prefix --full-path $DIR -H -t d | fzf --preview="exa -s type --icons {}" --bind="ctrl-space:toggle-preview" --preview-window=,30:hidden)
+	# if no argument is provided, search from ~ else use argument
+	[[ -z $1 ]] && DIR=~ || DIR=$1
+	# choose file using rg and fzf
+	CHOSEN=$(fd --strip-cwd-prefix --full-path $DIR -H -t d | fzf --preview="exa -s type --icons {}" --bind="ctrl-space:toggle-preview" --preview-window=,30:hidden)
 
-    # quit if no path is selected else cd into the path
-    if [[ -z $CHOSEN ]]; then
-        echo $CHOSEN
-        return 1
-    else
-        cd "$CHOSEN"
-    fi
+	# quit if no path is selected else cd into the path
+	if [[ -z $CHOSEN ]]; then
+		echo $CHOSEN
+		return 1
+	else
+		cd "$CHOSEN"
+	fi
 
-    # show ls output if dir has less than 61 files
-    [[ $(ls | wc -l) -le 60 ]] && (pwd; ls)
-    return 0
+	# show ls output if dir has less than 61 files
+	[[ $(l | wc -l) -le 60 ]] && (
+		pwd
+		l
+	)
+	return 0
 }
 
 # fzf superpower
@@ -183,12 +217,12 @@ export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 # - The first argument to the function ($1) is the base path to start traversal
 # - See the source code (completion.{bash,zsh}) for the details.
 _fzf_compgen_path() {
-    fd --hidden --follow . "$1"
+	fd --hidden --follow . "$1"
 }
 
 # Use fd to generate the list for directory completion
 _fzf_compgen_dir() {
-    fd --type d --hidden --follow . "$1"
+	fd --type d --hidden --follow . "$1"
 }
 
 # open piew in current dir
@@ -211,8 +245,7 @@ export PATH="$PATH:$GEM_HOME/bin"
 
 # wget
 export WGETRC="/data/data/com.termux/files/usr/etc/wgetrc"
-alias wget='wget --hsts-file="$XDG_CACHE_HOME/wget-hsts"'
-
+# alias wget='wget --hsts-file="$XDG_CACHE_HOME/wget-hsts"'
 
 # fnm
 # export PATH="/data/data/com.termux/files/home/.local/share/fnm:$PATH"
@@ -235,6 +268,9 @@ export PATH="/data/data/com.termux/files/home/.local/share/nvim/mason/bin:$PATH"
 # alias as=astyle
 
 export PATH="/data/data/com.termux/files/usr/local/bin:$PATH"
+export PATH="/data/data/com.termux/files/home/.local/bin:$PATH"
+
+export GPG_TTY=$(tty)
 
 # enable starship prompt
 eval "$(starship init bash)"

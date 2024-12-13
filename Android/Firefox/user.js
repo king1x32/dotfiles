@@ -129,6 +129,7 @@ user_pref("javascript.options.spectre.string_mitigations", false);
 user_pref("javascript.options.spectre.value_masking", false);
 user_pref("javascript.options.wasm_experimental_compile_pipeline", true);
 user_pref("browser.tabs.groups.enabled", true);
+// user_pref("dom.ipc.disableContentProcessReuse", true);
 
 // Enable Sleeping Tab
 user_pref("floorp.tabsleep.enabled", true);
